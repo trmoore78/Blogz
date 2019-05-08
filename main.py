@@ -3,57 +3,71 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:beproductive@localhost:8889/build-a-blog'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:hello1@localhost:8889/build-a-blog'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
+page_header  = """ <!DOCTYPE html>
+<html>
+    <head>
+    <a>Welcome to WebCaesar</a> 
+    <style>
+    form {{
+                background-color: #eee;
+                padding: 20px;
+                margin: 0 auto;
+                width: 540px;
+                font: 16px sans-serif;
+                border-radius: 10px;
+            }}
+    textarea {{
+                margin: 10px 0;
+                width: 540px;
+                height: 120px;
+            }}
+        </style>
+    </head>
+"""
 class Blog(db.Model):
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
     body = db.Column(db.String(120))
-    completed = db.Column(db.Boolean)
 
     def __init__(self, title, body):
-        self.title = title
-        self.body = body
-        self.completed = False
+        return "(%d, %s, %s)"% (self.id,self.title,self.body)
         
-class Task(db.Model):
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120))
-    completed = db.Column(db.Boolean)
-
-    def __init__(self, name):
-        self.name = name
-        self.completed = False
+posts ={}
+count = [0]
 
 
-@app.route('/', methods=['POST', 'GET'])
-def index():
+@app.route('/Blog', methods=['POST'])
+def Blog():
+    blog_id = int(request.form['id'])
+    id = Blog.query.get(blog_id)
+    return render_template('base.html')
+
+
+@app.route('/newpost', methods=['POST', 'GET'])
+def newpost():
 
     if request.method == 'POST':
-        task_name = request.form['task']
-        new_task = Task(task_name)
-        db.session.add(new_task)
+        title = request.form['title']
+        body = request.form['body']
+        new_blog = Blog(title, body)
+        db.session.add(new_blog)
         db.session.commit()
-
-    tasks = Task.query.filter_by(completed=False).all()
-    completed_tasks = Task.query.filter_by(completed=True).all()
-    return render_template('todos.html',title="Get It Done!", 
-        tasks=tasks, completed_tasks=completed_tasks)
+        return render_template('base.html', title=title,body=body)
+    else:
+        return render_template('post.html')
 
 
-@app.route('/delete-task', methods=['POST'])
-def delete_task():
-
-    task_id = int(request.form['task-id'])
-    task = Task.query.get(task_id)
-    task.completed = True
-    db.session.add(task)
-    db.session.commit()
-
-    return redirect('/')
+@app.route("/")
+def index():
+    all_posts = Blog.query.get.all('id')
+    posts = {'posts':all_posts}
+    return render_template('base.html', posts)
 
 
 if __name__ == '__main__':

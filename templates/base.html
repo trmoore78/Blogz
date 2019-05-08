@@ -1,11 +1,30 @@
 <!doctype html>
 <html>
     <head>
-        <title>{{title}}</title>
+        <title>Build A Blog</title>
+        <meta charset="utf-8">
     </head>
-<body>
-
+    <body>
+            <div class="nav">
+                <a href="/Blog">Blog</a>
+                <a href="/newpost">Enter New Post</a>
+            </div>
+       
+    
     {% block content %}
+    <h2>All Posts</h2>
+    {% for p in posts %}
+    {% if post.id|length == 0 %}
+    <p>No posts yet</p>
+    {% else %}
+        <ul>
+            <li>{{p.title}}</li>
+            <li>{{p.body}}</li>
+            
+        </ul>
+
+    {% endif %}
+
     {% endblock %}
 
 </body>

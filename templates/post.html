@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+        <head>
+                <title>Build A Blog</title>
+                <meta charset="utf-8">
+            </head>
+            <body>
+                    <div class="nav">
+                        <a href="/Blog">Blog</a>
+                        <a href="/newpost">Enter New Post</a>
+                    </div>
+       
+    
+{% block content %}
+    <h1>New Blog!</h1>
+    <form method='get' action='base.html' style="display:inline-block;">
+        <label>New Title:</label>
+            <input type="text" name='title' />
+        
+        <br></br>
+        <label>New Body:</label>
+            <textarea input type="text" name='body'></textarea>
+        <br></br>
+        <input type="submit" value='Add Post!' />
+    </form>
+   
+{% endblock %}
+</body>
+</html>
