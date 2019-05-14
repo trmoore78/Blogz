@@ -1,5 +1,6 @@
 from flask import Flask, request, redirect, render_template,url_for
 from flask_sqlalchemy import SQLAlchemy
+import cgi
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -28,19 +29,29 @@ def blog():
         
 @app.route('/newpost',methods=['GET','POST']) 
 def newpost():
+
+    new_title_error=""
+    new_body_error=""
+
     if request.method == 'POST':
-        new_title = request.form['title']
-        new_body = request.form['body']
-        new_blog = Blog(new_title, new_body)
-        db.session.add(new_blog)
-        db.session.commit()
-        newentry = request.args.get('id')
-        newpostid = Blog.query.get(newentry)
-        return redirect('display,html',postid=newpostid)
+        new_title = cgi.escape(request.form['title'])
+        new_body = cgi.escape(request.form['body'])
+        if len(new_title) == 0:
+            new_title_error = "Please enter a title for your new post"
+            return render_template('post.html',new_title_error=new_title_error,new_body=new_body)
+        elif len(new_body) == 0:
+            new_body_error = "Please enter a body for your new post"
+            return render_template('post.html',new_title=new_title,new_body_error=new_body_error)
+        else:
+            new_blog = Blog(new_title, new_body)
+            db.session.add(new_blog)
+            db.session.commit()
+            return redirect('/blog?id={}'.format(new_blog.id))
 
     elif request.method == 'GET':
         return render_template('post.html')
 
+    
 
 @app.route("/", methods=['GET'])
 def index():

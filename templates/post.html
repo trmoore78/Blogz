@@ -6,24 +6,26 @@
             </head>
             <body>
                     <div class="nav">
-                        <a href="/">Blog</a>
-                        <a href="/newpost">Enter New Post</a>
+                        <a href="/">Main Blog Page</a>
+                        <a href="/newpost">Add a Blog Entry</a>
                     </div>
        
     
 {% block content %}
-    <h1>New Blog!</h1>
+    <h1>Add New Post</h1>
     <form method='post' style="display:inline-block;">
-        <label>New Title:</label>
-            <input type="text" name='title' />
-        
+        <label>Title For Your New Post:</label><br></br>
+            <input type="text" name="title" value={{new_title}} />   {{new_title_error}} 
+            <p class="error"></p>
         <br></br>
-        <label>New Body:</label>
-            <textarea input type="text" name='body'></textarea>
+        <label>Body of Your New Post:</label><br></br>
+            <textarea input type="text" name="body" value={{new_body}}></textarea>    {{new_body_error}}
+            <p class="error"></p>
         <br></br>
-        <input type="submit" value='Add Post!' />
+        <input type="submit" value="Add New Entry!" />
     </form>
 
 {% endblock %}
 </body>
 </html>
+
