@@ -1,0 +1,6 @@
+{
+    "python.pythonPath": "C:\\Users\\MsMoore78\\AppData\\Local\\conda\\conda\\envs\\flask-env\\python.exe",
+    "python.linting.pylintEnabled": true,
+    "python.linting.flake8Enabled": false,
+    "python.linting.enabled": true
+}
