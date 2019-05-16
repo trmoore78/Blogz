@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+        <head>
+                <title>Build A Blog</title>
+                <meta charset="utf-8">
+            </head>
+            <body>
+                    <div class="nav">
+                        <a href="/">Main Blog Page</a>
+                        <a href="/newpost">Add a Blog Entry</a>
+                    </div>
+       
+    
+{% block content %}
+    <h1>Add New Post</h1>
+    <form method='post' style="display:inline-block;">
+        <label>Title For Your New Post:</label><br></br>
+            <input type="text" name="title" value={{new_title}} />   {{new_title_error}} 
+            <p class="error"></p>
+        <br></br>
+        <label>Body of Your New Post:</label><br></br>
+            <textarea input type="text" name="body" value={{new_body}}></textarea>    {{new_body_error}}
+            <p class="error"></p>
+        <br></br>
+        <input type="submit" value="Add New Entry!" />
+    </form>
+
+{% endblock %}
+</body>
+</html>
+

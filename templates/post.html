@@ -1,31 +1,21 @@
-<!doctype html>
-<html>
-        <head>
-                <title>Build A Blog</title>
-                <meta charset="utf-8">
-            </head>
-            <body>
-                    <div class="nav">
-                        <a href="/">Main Blog Page</a>
-                        <a href="/newpost">Add a Blog Entry</a>
-                    </div>
-       
-    
-{% block content %}
-    <h1>Add New Post</h1>
-    <form method='post' style="display:inline-block;">
-        <label>Title For Your New Post:</label><br></br>
-            <input type="text" name="title" value={{new_title}} />   {{new_title_error}} 
+<!DOCTYPE html>
+<html lang="en">
+    <body>
+        <form action="/login" id="form" method="POST">
+            <h1>Login</h1>
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" value="{{username}}"/>  {{usernameError}}
             <p class="error"></p>
-        <br></br>
-        <label>Body of Your New Post:</label><br></br>
-            <textarea input type="text" name="body" value={{new_body}}></textarea>    {{new_body_error}}
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" value="{{passowrd}}"/>  {{passwordError}}
             <p class="error"></p>
-        <br></br>
-        <input type="submit" value="Add New Entry!" />
-    </form>
-
-{% endblock %}
-</body>
-</html>
-
+            <label for="password">Verify Password</label>
+            <input type="password" name="password2" id="password2" value="{{password2}}"/>  {{password2Error}}
+            <p class="error"></p>
+            <label for="email">Email(optional)</label>
+            <input type="text" name="email" id="email" value="{{email}}"/>  {{emailError}}
+            <p class="error"></p>
+            <button type="submit">Register</button>
+            </form>
+        </body>
+    </html>

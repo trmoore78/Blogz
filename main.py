@@ -17,11 +17,9 @@ class User(db.Model):
     password = db.Column(db.String(25))
     blogs = db.relationship('Blog',backref='owner')
 
-    def __init__(self, username, password, blogs, owner):
+    def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.blogs = blogs
-        self.owner = owner
 
 class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -29,11 +27,58 @@ class Blog(db.Model):
     body = db.Column(db.String(120))
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, title, body):
+    def __init__(self, title, body, owner):
         self.title = title
         self.body = body
+        self.owner = owner
     
-        
+@app.before_request
+def require_login():
+    allowed_routes = ['login', 'signup']
+    if request.endpoint not in allowed_routes and 'username' not in session:
+        return redirect('/login')
+
+
+@app.route('/login',methods=['POST','GET'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+        if user and user.password == password:
+            session['username'] = username
+            return redirect('/newpost')
+        elif user and user.password != password:
+            flash("Password is Incorrect")
+            return render_template('/signup')
+        elif username.user != user:
+            flash("Username does not exist")
+            return redirect('/login')
+    return render_template('login.html')
+
+    
+@app.route('/signup', methods=['POST', 'GET'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        password2 = request.form['password2']
+
+        existing_user = User.query.filter_by(username=username).first()
+
+        if existing_user:
+            return redirect('/newpost')
+        elif not existing_user:
+            new_user = User(username, password)
+            db.session.add(new_user)
+            db.session.commit()
+            session['username'] = username
+            return redirect('/login')
+        else:
+            flash('Duplicate user')
+            
+    return render_template('signup.html')
+
 
 @app.route('/blog',methods=['GET'])
 def blog():
@@ -45,19 +90,15 @@ def blog():
         
 @app.route('/newpost',methods=['GET','POST']) 
 def newpost():
-
-    new_title_error=""
-    new_body_error=""
-
     if request.method == 'POST':
         new_title = cgi.escape(request.form['title'])
         new_body = cgi.escape(request.form['body'])
         if len(new_title) == 0:
-            new_title_error = "Please enter a title for your new post"
-            return render_template('post.html',new_title_error=new_title_error,new_body=new_body)
+            flash("Please enter a title for your new post")
+            return render_template('post.html')
         elif len(new_body) == 0:
-            new_body_error = "Please enter a body for your new post"
-            return render_template('post.html',new_title=new_title,new_body_error=new_body_error)
+            flash("Please enter a body for your new post")
+            return render_template('post.html')
         else:
             new_blog = Blog(new_title, new_body)
             db.session.add(new_blog)
@@ -67,12 +108,26 @@ def newpost():
     elif request.method == 'GET':
         return render_template('post.html')
 
-    
 
-@app.route("/", methods=['GET'])
+@app.route('/logout')
+def logout():
+    del session['username']
+    return redirect('/')
+
+
+@app.route("/", methods=['POST','GET'])
 def index():
-    posts = Blog.query.all()
-    return render_template('base.html', posts=posts)
+    owner = User.query.filter_by(username=session['username']).first()
+    
+    if request.method == 'POST':
+        new_title = request.form['title']
+        new_body = request.form['body']
+        blogpost = Blog(new_title,new_body,owner)
+        db.session.add(blogpost)
+        db.session.commit()
+
+    posts = Blog.query.filter_by.all()
+    return render_template('base.html', title ="Blogz", posts=posts)
 
 
 if __name__ == '__main__':
