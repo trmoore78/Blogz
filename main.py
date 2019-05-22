@@ -44,17 +44,12 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        print("made it here")
         user = User.query.filter_by(username=username).first()
-        print("made it here too")
         if user and user.password == password:
-            
             user_login = User(username,password)
             session['user_login'] = user_login
-            print("made it if statement")
-           # flash("Logged In")
-            #return redirect('/newpost')
-            return "Hi"
+            flash("Logged In")
+            return redirect('/newpost')
         elif user and user.password != password:
             flash("Password is Incorrect")
             return redirect('/login')
@@ -99,8 +94,8 @@ def signup():
             return redirect('/signup')
         else:
             flash('Duplicate user')
-            
-    return render_template('signup.html')
+            return redirect('/signup')
+    return render_template('login.html')
 
 
 @app.route('/blog',methods=['GET'])
