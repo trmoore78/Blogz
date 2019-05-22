@@ -1,24 +1,9 @@
-<!doctype html>
-<html>
-    <head>
-        <title>Build A Blog</title>
-        <meta charset="utf-8">
-    </head>
-    <body>
-            <div class="nav">
-                <a href="/">Main Blog Page</a>
-                <a href="/newpost">Add a Blog Entry</a>
-            </div>
+{% extends "base.html" %}
+{% block content %}
        
     
-    {% block content %}
-    <h2>My Post</h2>
-    
-        <div>
-            Title: {{postid.title}}<br></br>
-            Post:  {{postid.body}}            
-        </div>
-    {% endblock %}
-
-</body>
-</html>
+<div>
+    Title: {{postid.title}}<br></br>
+    Post:  {{postid.body}}            
+</div>
+{% endblock %}

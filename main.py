@@ -11,16 +11,6 @@ db = SQLAlchemy(app)
 app.secret_key = 'y337kGcys&ZP38'
 
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(25), unique=True)
-    password = db.Column(db.String(25))
-    blogs = db.relationship('Blog',backref='owner')
-
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-
 class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120))
@@ -31,7 +21,19 @@ class Blog(db.Model):
         self.title = title
         self.body = body
         self.owner = owner
-    
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(25), unique=True)
+    password = db.Column(db.String(25))
+    posts = db.relationship('Blog',backref='owner')
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+
 @app.before_request
 def require_login():
     allowed_routes = ['login', 'signup']
@@ -46,20 +48,17 @@ def login():
         password = request.form['password']
         user = User.query.filter_by(username=username).first()
         if user and user.password == password:
-            user_login = User(username,password)
-            session['user_login'] = user_login
+            session['username'] = username
             flash("Logged In")
+            print(session)
             return redirect('/newpost')
         elif user and user.password != password:
             flash("Password is Incorrect")
             return redirect('/login')
-        elif user.username != username:
-            flash("Username does not exist")
+        else:
+            flash('User password incorrect, or user does not exist')
             return redirect('/login')
-    elif request.method == 'GET':
-        return redirect('/signup')
-    
-    return render_template('login.html')
+    return redirect('/login')
 
     
 @app.route('/signup', methods=['POST', 'GET'])
@@ -92,6 +91,9 @@ def signup():
         elif len(password) < 3 and len(password) >= 1:
             flash("Password must be greater than 3 characters")
             return redirect('/signup')
+        elif len(password2) < 3 and len(password2):
+            flash("Password must be greater than 3 characters")
+            return redirect('/signup')
         else:
             flash('Duplicate user')
             return redirect('/signup')
@@ -118,7 +120,8 @@ def newpost():
             flash("Please enter a body for your new post")
             return render_template('post.html')
         else:
-            new_blog = Blog(new_title, new_body)
+            owner = User.query.filter_by(username=session['username']).first()
+            new_blog = Blog(new_title, new_body,owner)
             db.session.add(new_blog)
             db.session.commit()
             return redirect('/blog?id={}'.format(new_blog.id))
@@ -130,21 +133,21 @@ def newpost():
 @app.route('/logout')
 def logout():
     del session['username']
-    return redirect('/blog')
+    return redirect('/')
 
 
 @app.route("/", methods=['POST','GET'])
 def index():
-    owner = User.query.filter_by(username=session['username']).first()
-    
     if request.method == 'POST':
         new_title = request.form['title']
         new_body = request.form['body']
-        blogpost = Blog(new_title,new_body,owner)
-        db.session.add(blogpost)
+        newpost = Blog(new_title,new_body)
+        owner = User.query.filter_by(username=session['username']).first()
+        db.session.add(newpost,owner)
         db.session.commit()
+    owner = User.query.filter_by(username=session['username']).first()
 
-    posts = Blog.query.filter_by(owner=owner)
+    posts = Blog.query.filter_by(owner=owner).all()
     return render_template('login.html', title ="Blogz", posts=posts)
 
 

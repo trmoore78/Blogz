@@ -1,31 +1,27 @@
-
 <!doctype html>
 <html>
     <head>
-        <title>Build A Blog</title>
+        <title>Blogz</title>
         <meta charset="utf-8">
     </head>
     <body>
             <div class="nav">
                 <a href="/login">Log In</a>
-                <a href="/">Main Blog Page</a>
+                <a href="/display">Main Blog Page</a>
                 <a href="/newpost">Add a Blog Entry</a>
                 <a href="/logout">Log Out</a>
             </div>
        
     {% block content %}
 
-    <h2>My Posts</h2>
-
-    {% if posts|length == 0 %}
-    <p>No posts yet</p>
-    {% else %}
-        {% for post in posts %}
+    {% with messages = get_flashed_message() %}
         <ul>
-            <li><a href="/blog?id={{post.id}}">{{post.title}}</a></li>            
+            {% for message in messages %}
+                <li>{{message}}</li>
+            {% endfor %}
         </ul>
-        {% endfor %}
-    {% endif %}
+    {% endwith %}
+
     {% endblock %}
 
 </body>

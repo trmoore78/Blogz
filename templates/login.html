@@ -1,14 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-    <body>
-        <form action="/login" id="form" method="POST">
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Log into Blog!</h1>
+<p>If you don't have an account, you may <a href="/signup">Sign Up</a> for one.</p>
+
+        <form action="/login" method="POST">
             <h1>Login</h1>
             <label for="username">Username</label>
-            <input type="text" name="username" id="username"/> 
+            <input type="text" name="username" value="{{ username }}"> 
             <br></br>
             <label for="password">Password</label>
-            <input type="password" name="password" id="password"/>
+            <input type="password" name="password"/>
+            <br></br>
             <button type="submit">Login</button>
             </form>
-        </body>
-    </html>
+{% endblock %}
