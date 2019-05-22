@@ -44,16 +44,26 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        print("made it here")
         user = User.query.filter_by(username=username).first()
+        print("made it here too")
         if user and user.password == password:
-            session['username'] = username
-            return redirect('/newpost')
+            
+            user_login = User(username,password)
+            session['user_login'] = user_login
+            print("made it if statement")
+           # flash("Logged In")
+            #return redirect('/newpost')
+            return "Hi"
         elif user and user.password != password:
             flash("Password is Incorrect")
-            return render_template('/signup')
-        elif username.user != user:
+            return redirect('/login')
+        elif user.username != username:
             flash("Username does not exist")
             return redirect('/login')
+    elif request.method == 'GET':
+        return redirect('/signup')
+    
     return render_template('login.html')
 
     
@@ -66,14 +76,27 @@ def signup():
 
         existing_user = User.query.filter_by(username=username).first()
 
-        if existing_user:
+        if existing_user and existing_user.password == password:
+            session['username'] = username
             return redirect('/newpost')
+        elif len(username) == 0 or len(password) == 0 or len(password2) == 0:
+            flash("One or more fields are invalid. Please try again.")
+            return redirect('/signup')
         elif not existing_user:
             new_user = User(username, password)
             db.session.add(new_user)
             db.session.commit()
             session['username'] = username
             return redirect('/login')
+        elif password != password2:
+            flash("Passwords do not match.")
+            return redirect('/signup')
+        elif len(username) < 3 and len(username) >= 1:
+            flash("Username must be greater than 3 characters")
+            return redirect('/signup')
+        elif len(password) < 3 and len(password) >= 1:
+            flash("Password must be greater than 3 characters")
+            return redirect('/signup')
         else:
             flash('Duplicate user')
             
@@ -112,7 +135,7 @@ def newpost():
 @app.route('/logout')
 def logout():
     del session['username']
-    return redirect('/')
+    return redirect('/blog')
 
 
 @app.route("/", methods=['POST','GET'])
@@ -126,8 +149,8 @@ def index():
         db.session.add(blogpost)
         db.session.commit()
 
-    posts = Blog.query.filter_by.all()
-    return render_template('base.html', title ="Blogz", posts=posts)
+    posts = Blog.query.filter_by(owner=owner)
+    return render_template('login.html', title ="Blogz", posts=posts)
 
 
 if __name__ == '__main__':
