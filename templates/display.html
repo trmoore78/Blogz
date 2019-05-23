@@ -1,9 +1,21 @@
 {% extends "base.html" %}
+
 {% block content %}
-       
-    
-<div>
-    Title: {{postid.title}}<br></br>
-    Post:  {{postid.body}}            
-</div>
-{% endblock %}
+
+              <h1>Build a blog</h1>
+
+
+  {% if posts|length == 0 %}
+  <p>No blog entries yet</p>
+  {% else %}
+
+  
+        {% for post in posts %}
+        
+            <h2><a href="/blog?id={{post.id}}">{{post.title}}</a></h2>
+            <p>{{post.body}}</p>
+        {% endfor %}
+
+  {% endif %}
+
+  {% endblock %}

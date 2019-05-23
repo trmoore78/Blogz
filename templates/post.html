@@ -3,7 +3,7 @@
 
    
 <h1>Add New Post</h1>
-    <form method='post' style="display:inline-block;">
+    <form method='POST' style="display:inline-block;">
         <label>Title For Your New Post:</label><br></br>
             <input type="text" name="title"/> 
         <br></br>
@@ -13,15 +13,5 @@
         <input type="submit" value="Add New Entry!" />
     </form>
 
-    <h2>My Posts</h2>
-
-    {% if posts|length == 0 %}
-    <p>No posts yet</p>
-    {% else %}
-        {% for post in posts %}
-        <ul>
-            <li><a href="/blog?id={{post.id}}">{{post.title}}</a></li>            
-        </ul>
-        {% endfor %}
-    {% endif %}
+    
 {% endblock %}
